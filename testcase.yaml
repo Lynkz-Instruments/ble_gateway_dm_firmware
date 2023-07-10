@@ -1,0 +1,14 @@
+sample:
+  description: BLE Gateway Device Management Firmware
+  name: LCZ BLE Gateway DM Firmware
+common:
+  tags: lcz_ble_gw_dm
+  platform_allow: pinnacle_100_dvk mg100 bl5340_dvk_cpuapp
+  harness: console
+  harness_config:
+    type: multi_line
+    regex:
+      - "BLE Gateway DM Firmware v*"
+tests:
+  lcz.ble_gw_dm:
+    tags: lcz_ble_gw_dm

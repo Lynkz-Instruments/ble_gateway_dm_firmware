@@ -1,0 +1,164 @@
+/*
+ * Copyright (c) 2021 Nordic Semiconductor ASA
+ * Copyright (c) 2022 Laird Connectivity LLC
+ *
+ * SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+ */
+
+/delete-node/ &boot_partition;
+/delete-node/ &slot0_partition;
+/delete-node/ &slot0_ns_partition;
+/delete-node/ &slot1_partition;
+/delete-node/ &slot1_ns_partition;
+/delete-node/ &scratch_partition;
+/delete-node/ &storage_partition;
+
+/ {
+	chosen {
+		nordic,pm-ext-flash = &mx25r64;
+	};
+
+	fstab {
+		compatible = "zephyr,fstab";
+		lfs1: lfs1 {
+			compatible = "zephyr,fstab,littlefs";
+			mount-point = "/lfs1";
+			partition = <&littlefs_storage>;
+			automount;
+			read-size = <16>;
+			prog-size = <16>;
+			cache-size = <64>;
+			lookahead-size = <32>;
+			block-cycles = <512>;
+		};
+	};
+};
+
+&flash0 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* 64K */
+		boot_partition: partition@0 {
+			label = "mcuboot";
+			reg = <0x00000000 0x00010000>;
+		};
+		/* 640K */
+		slot0_partition: partition@10000 {
+			label = "image-0";
+			reg = <0x00010000 0x000a0000>;
+		};
+		/* 256K */
+		slot0_ns_partition: partition@b0000 {
+			label = "image-0-nonsecure";
+			reg = <0x000b0000 0x00040000>;
+		};
+
+		/*
+		 * The flash starting at 0x000f8000 and ending at
+		 * 0x000fffff is reserved for use by the application.
+		 */
+
+		/*
+		 * Storage partition will be used by FCB/NVS
+		 * if enabled. 32K
+		 */
+		storage_partition: partition@f8000 {
+			label = "storage";
+			reg = <0x000f8000 0x00008000>;
+		};
+	};
+};
+
+&mx25r64 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		/* 640K */
+		slot1_partition: partition@0 {
+			label = "image-1";
+			reg = <0x00000000 0x000a0000>;
+		};
+		/* 256K */
+		slot1_ns_partition: partition@A0000 {
+			label = "image-1-nonsecure";
+			reg = <0x000a0000 0x00040000>;
+		};
+		/* 128K */
+		scratch_partition: partition@e0000 {
+			label = "image-scratch";
+			reg = <0x000e0000 0x00020000>;
+		};
+
+		littlefs_storage: partition@22B000 {
+			label = "littlefs_storage";
+			reg = <0x0022B000 0x005D5000>;
+		};
+	};
+};
+
+/*
+ * This section is used to enable a partition which is used through the flash API
+ * but which is in reality stored in RAM. This is done to load data from
+ * external flash to the network core. Since the network core cannot access
+ * the external flash directly, the data is buffered in RAM before being
+ * copied by the network core to the network core flash.
+ *
+ * The partition must be enabled by the application configuration to prevent
+ * bus faults when mcumgr tries to access simulated partition with network core
+ * image data.
+ */
+
+/ {
+	soc {
+		/* Add a flash controller which has the compatible
+		 * 'zephyr,sim-flash'. This will ensure that the flash
+		 * simulator can use it. None of the other properties in this
+		 * node is used for anything.
+		 */
+		nordic_ram_flash_controller: nordic_ram-flash-controller@0 {
+			compatible = "zephyr,sim-flash";
+			reg = <0x00000000 DT_SIZE_K(40)>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			erase-value = <0xff>;
+			label = "nordic_ram_flash_flash_controller";
+
+			/* This node label must match that used in the flash
+			 * simulator.
+			 */
+			flash_sim0: flash_sim@0 {
+				status = "okay";
+				compatible = "soc-nv-flash";
+				label = "simulated_flash";
+				erase-block-size = <4096>;
+				write-block-size = <4>;
+				reg = <0x00000000 DT_SIZE_K(256)>;
+
+				partitions {
+					compatible = "fixed-partitions";
+					#address-cells = <1>;
+					#size-cells = <1>;
+
+					/* This partition must be defined for
+					 * MCUboot to find the partition ID
+					 * of the primary slot for image 1,
+					 * which is stored in this partition.
+					 */
+					slot2_partition: partition@0 {
+						label = "image-2";
+						reg = <0x00000000 0x00000A000>;
+					};
+				};
+			};
+		};
+	};
+};
+
+&uart0 {
+	compatible = "nordic,nrf-uarte";
+};

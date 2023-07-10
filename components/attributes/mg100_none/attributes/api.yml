@@ -1,0 +1,1979 @@
+openrpc: 1.2.6
+info:
+  title: BLE Gateway DM Firmware
+  version: 1.1.1
+  x-default-baud: 115200
+methods:
+- name: echo
+  summary: Echo command
+  description: Echos back the string that was sent
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 0
+  params:
+  - name: d
+    summary: Echo string
+    description: The string that will be echoed back
+    required: true
+    x-ctype: string
+    x-sequencenumber: 1
+    x-default: hello
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 255
+  result:
+    name: echo_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Reason code
+      description: 'Result of the read operation. NOTE: This param may only be present
+        if an error occurs.'
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: r
+      summary: Echo result
+      description: The matching string that was to be echoed
+      required: true
+      x-ctype: string
+      x-example: hello
+      x-sequencenumber: 2
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 255
+- name: reset
+  summary: Reboot command
+  description: Reboots the device
+  x-management-option: Write
+  x-id: 5
+  x-group_id: 0
+  result:
+    name: reset_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Reason code
+      description: 'Result of the read operation. NOTE: This param may only be present
+        if an error occurs.'
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+- name: mcumgr_params
+  summary: mcumgr params
+  description: Reads mcumgr params that are set in firmware
+  x-management-option: Read
+  x-id: 6
+  x-group_id: 0
+  result:
+    name: mcumgr_params_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Reason code
+      description: 'Result of the read operation. NOTE: This param may only be present
+        if an error occurs.'
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: buf_size
+      summary: mcumgr buffer size
+      description: The buffer size for receiving mcumgr commands
+      required: true
+      x-ctype: uint32_t
+      x-example: 300
+      x-sequencenumber: 2
+      schema:
+        type: integer
+    - name: buf_count
+      summary: Number of mcumgr buffers
+      description: The number of mcumgr buffers available for receiving commands
+      required: true
+      x-ctype: uint32_t
+      x-example: 4
+      x-sequencenumber: 3
+      schema:
+        type: integer
+- name: get_parameter
+  summary: Get Parameter
+  description: ''
+  x-management-option: Read
+  x-id: 1
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter ID
+    description: Parameter ID
+    required: true
+    x-ctype: uint16_t
+    x-sequencenumber: 1
+    x-default: null
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  result:
+    name: get_parameter_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: result
+      description: negative error code if an error occurred, otherwise size of data
+        returned
+      required: true
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      x-default: 0
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: id
+      summary: Parameter ID
+      description: Parameter ID
+      required: true
+      x-ctype: uint16_t
+      x-sequencenumber: 2
+      x-default: 0
+      x-example: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r1
+      summary: Value
+      description: Actual type sent depends on the parameter itself chosen.
+      required: false
+      x-ctype: string
+      x-sequencenumber: 3
+      x-default: 0
+      x-example: 0
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: set_parameter
+  summary: Set Parameter
+  description: Set an attribute
+  x-management-option: Write
+  x-id: 2
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter ID
+    description: Parameter ID
+    required: true
+    x-ctype: uint16_t
+    x-sequencenumber: 1
+    x-default: 0
+    x-example: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  - name: p2
+    summary: Parameter Value
+    description: Actual type sent depends on the parameter itself chosen in p1
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: set_parameter_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: The id number of what is being set
+      required: true
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      x-default: 0
+      x-example: 3
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result status of setting the value. Will return 0 if successful, negative
+        if error
+      description: ''
+      required: true
+      x-ctype: int32_t
+      x-sequencenumber: 2
+      x-default: null
+      x-example: 0
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: load_parameter_file
+  summary: Load parameters from a file
+  description: Used in conjunction with file system commands
+  x-management-option: Write
+  x-id: 3
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: File name
+    description: Input file is an optional
+    required: false
+    x-ctype: string
+    x-default: 0
+    x-example: /lfs/attr.txt
+    x-sequencenumber: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: load_parameter_file_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: f
+      summary: Path to the feedback file containing load error details
+      required: false
+      x-example: /ext/feedback.txt
+      x-ctype: string
+      x-sequencenumber: 2
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: dump_parameter_file
+  summary: Dump chosen parameters to a file
+  description: Used in conjunction with file system commands
+  x-management-option: Write
+  x-id: 4
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Have the parameter choose the dump type
+    description: Dump Type 0 = read/write, 1 = writable, 2 = read-only
+    required: true
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 2
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 2
+  - name: p2
+    summary: File name
+    description: Output file is an optional parameter. This is only used if CONFIG_ATTRIBUTE_MGMT_DUMP_USER_FILE_NAME
+      is set, otherwise it will be ignored.
+    required: false
+    x-ctype: string
+    x-default: 0
+    x-example: /lfs/dump.txt
+    x-sequencenumber: 1
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 0
+  result:
+    name: dump_parameter_file_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, length of file in bytes on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+    - name: n
+      summary: Name
+      description: The absolute path name of the dump file on the file system. Returned
+        only when successful.
+      required: false
+      x-example: /ext/dump.txt
+      x-ctype: string
+      x-sequencenumber: 2
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 0
+- name: factory_reset
+  summary: This will force a factory reset of the device.
+  x-management-option: Write
+  x-id: 5
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: factory_reset_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: set_notify
+  summary: Set notification flag
+  description: Device generates BLE notifications for corresponding attribute
+  x-management-option: Write
+  x-id: 6
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Attribute ID
+    required: true
+    x-ctype: uint16_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  - name: p2
+    summary: Parameter 2
+    description: Value to set notification flag to
+    required: true
+    x-ctype: bool
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 2
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 1
+  result:
+    name: set_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: Attribute id
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: get_notify
+  summary: Get notification flag
+  description: Device generates BLE notifications for corresponding attribute
+  x-management-option: Read
+  x-id: 7
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Parameter Id
+    required: true
+    x-ctype: uint16_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 65535
+  result:
+    name: get_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: id
+      summary: Attribute id
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    - name: r
+      summary: Result
+      description: Notification state
+      required: true
+      x-example: 0
+      x-ctype: uint16_t
+      x-sequencenumber: 2
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: disable_notify
+  summary: Disable All Notifications
+  x-management-option: Write
+  x-id: 8
+  x-group_id: 65
+  params:
+  - name: p1
+    summary: Parameter 1
+    description: Dummy
+    required: false
+    x-ctype: uint8_t
+    x-default: 0
+    x-example: 1
+    x-sequencenumber: 1
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 0
+  result:
+    name: disable_notify_result
+    schema:
+      type: array
+    x-result:
+    - name: r
+      summary: Result
+      description: Negative error code, 0 on success
+      required: true
+      x-example: 0
+      x-ctype: int32_t
+      x-sequencenumber: 1
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 0
+- name: file_download
+  summary: File Download
+  description: Request to download file from Zephyr file system.
+  x-management-option: Read
+  x-id: 0
+  x-group_id: 8
+  params:
+  - name: 'off'
+    summary: File offset
+    description: Offset where to start file access
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 1
+    x-default: 0
+    schema:
+      type: integer
+  - name: name
+    summary: file name
+    description: Full filename to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 0
+      maxLength: 64
+  result:
+    name: file_download_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Reason code
+      description: Result of the read operation
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: 'off'
+      summary: File offset
+      description: The updated file offset following read
+      required: true
+      x-ctype: uint64_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+    - name: data
+      summary: data
+      description: data
+      required: true
+      x-ctype: array<byte>
+      x-sequencenumber: 3
+      schema:
+        type: array
+    - name: len
+      summary: Length
+      description: The total file length, only returned when the requested offset
+        is 0.
+      required: false
+      x-ctype: uint64_t
+      x-example: 100
+      x-sequencenumber: 4
+      schema:
+        type: integer
+- name: file_upload
+  summary: File Upload
+  description: Request to upload file to Zephyr file system.
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 8
+  params:
+  - name: 'off'
+    summary: File Offset
+    description: Offset where to start file access
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 1
+    x-default: 0
+    schema:
+      type: integer
+  - name: name
+    summary: File name
+    description: Full file name to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: data
+    summary: File data
+    description: The data to write.
+    required: true
+    x-ctype: array<byte>
+    x-sequencenumber: 3
+    x-default: 0
+    schema:
+      type: array
+  - name: len
+    summary: Data length
+    description: Number of bytes being uploaded
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 4
+    x-default: 0
+    schema:
+      type: integer
+  result:
+    name: file_upload_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for the upload operation
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: 'off'
+      summary: Offset
+      description: Updated file offset
+      required: true
+      x-ctype: uint64_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+- name: file_status
+  summary: File status
+  description: See if the file is active, return length.
+  x-management-option: Read
+  x-id: 1
+  x-group_id: 8
+  params:
+  - name: name
+    summary: File name
+    description: Full file name to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  result:
+    name: file_status_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for when an error occurs
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: len
+      summary: Length
+      description: If there is no error the file length is returned
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 4
+      x-example: 0
+      schema:
+        type: integer
+- name: file_hash_checksum
+  summary: File hash checksum
+  description: Get a file SHA256 hash.
+  x-management-option: Read
+  x-id: 2
+  x-group_id: 8
+  params:
+  - name: type
+    summary: Checksum type
+    description: The type of checksum used. Use sha256 for SHA256.
+    required: true
+    x-ctype: string
+    x-sequencenumber: 1
+    x-default: 0
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: name
+    summary: File name
+    description: Full path of the file to access
+    required: true
+    x-ctype: string
+    x-sequencenumber: 2
+    x-default: 0
+    x-example: /ext/file.txt
+    schema:
+      type: string
+      minLength: 1
+      maxLength: 64
+  - name: 'off'
+    summary: File Offset
+    description: Offset where to start reading from the file
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 3
+    x-default: 0
+    schema:
+      type: integer
+  - name: len
+    summary: Length of the file to hash
+    required: true
+    x-ctype: uint64_t
+    x-sequencenumber: 4
+    x-default: 0
+    schema:
+      type: integer
+      minimum: 0
+      maximum: 4
+  result:
+    name: file_hash_checksum_result
+    schema:
+      type: array
+    x-result:
+    - name: rc
+      summary: Response code
+      description: Response code for when an error occurs
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 1
+      schema:
+        type: integer
+    - name: type
+      summary: Checksum type
+      description: If there is no error, the checksum type used. sha256 for SHA256.
+      required: true
+      x-ctype: string
+      x-sequencenumber: 2
+      x-default: 0
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 64
+    - name: 'off'
+      summary: File Offset
+      description: If there is no error, offset where to start reading from the file.
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 3
+      x-default: 0
+      schema:
+        type: integer
+    - name: len
+      summary: Length
+      description: If there is no error, the length of the file data that was hashed
+        is returned.
+      required: true
+      x-ctype: uint64_t
+      x-sequencenumber: 4
+      x-default: 0
+      schema:
+        type: integer
+    - name: output
+      summary: Byte string representing the hash result
+      required: true
+      x-ctype: string
+      x-sequencenumber: 5
+      x-default: 0
+      schema:
+        type: string
+        minLength: 64
+        maxLength: 64
+- name: shell_exec
+  summary: Execute Command
+  description: Execute a shell command
+  x-management-option: Write
+  x-id: 0
+  x-group_id: 9
+  params:
+  - name: argv
+    summary: cmd args
+    description: shell command arguments
+    required: true
+    x-ctype: array<char*>
+    x-sequencenumber: 1
+    x-default: kernel version
+    schema:
+      type: array
+      minItems: 0
+  result:
+    name: exec_result
+    schema:
+      type: array
+    x-result:
+    - name: o
+      summary: cmd output
+      description: The output response of a shell command. Command response max size
+        is set by CONFIG_SHELL_BACKEND_DUMMY_BUF_SIZE
+      required: true
+      x-ctype: string
+      x-sequencenumber: 1
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 300
+    - name: rc
+      summary: Reason code
+      description: Result of the command execution
+      required: true
+      x-ctype: int32_t
+      x-example: 0
+      x-sequencenumber: 2
+      schema:
+        type: integer
+components:
+  contentDescriptors:
+    device_params:
+      name: device_parameters
+      schema:
+        type: array
+      x-device-parameters:
+      - name: reserved0
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-default: 0
+        summary: Required by attribute system
+        x-id: 0
+      - name: api_version
+        required: true
+        schema:
+          maxLength: 11
+          minLength: 6
+          type: string
+        x-ctype: string
+        x-default: 1.1.1
+        x-example: 0.1.0
+        x-readable: true
+        summary: The API version that the firmware supports
+        x-id: 1
+      - name: firmware_version
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 5
+          type: string
+        x-ctype: string
+        x-default: 0.0.0+0
+        x-readable: true
+        summary: Firmware Version. Format = Major.Minor.Fix+build
+        x-id: 2
+      - name: dump_path
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-default: /lfs1/attr_dump.txt
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Path for attribute dump
+        x-id: 3
+      - name: load_path
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-default: /lfs1/enc/attr_load.txt
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Path for attribute load
+        x-id: 4
+      - name: board
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-default: my_board
+        x-example: pinnacle_100_dvk
+        x-readable: true
+        summary: Zephyr board the firmware is built for.
+        x-id: 5
+      - name: log_on_boot
+        description: When set to false, logging output will be disabled when the firmware
+          starts.
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 6
+      - name: disable_flow_control
+        description: When true flow control is disabled on the console UART. Requires
+          a reboot to take effect
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 7
+      - name: baud_rate
+        description: Baud rate for console uart. Changes require a reboot to take
+          effect.
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-default: 115200
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 8
+      - name: lwm2m_server_url
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 11
+          type: string
+          pattern: coaps?://(\.?|\w|[-|_])+([\.|/]((\w|[0-9]|[-|_])*))+(\:[0-9]{1,5})?
+        x-ctype: string
+        x-broadcast: true
+        x-default: coap://leshan.eclipseprojects.io:5683
+        x-example: coaps://leshan.eclipseprojects.io:5784
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Server URL to connect to
+        x-id: 9
+      - name: lwm2m_endpoint
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_device
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Endpoint name to identify the device
+        x-id: 10
+      - name: lwm2m_security
+        required: true
+        schema:
+          maximum: 4
+          minimum: 0
+          type: integer
+          enum:
+            PSK: 0
+            RPK: 1
+            CERT: 2
+            NO_SEC: 3
+            CERT_EST: 4
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 3
+        x-example: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: LwM2M Security mode
+        x-id: 11
+      - name: lwm2m_psk_id
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_device
+        x-example: my_device
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: PSK ID
+        x-id: 12
+      - name: lwm2m_psk
+        required: true
+        schema:
+          maxItems: 16
+          minItems: 16
+          type: array
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-array-size: 16
+        x-default: '{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+          0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f }'
+        x-prepare: false
+        x-readable: false
+        x-savable: true
+        x-writable: true
+        x-obscure-in-show: true
+        summary: Pre-shared key
+        x-id: 13
+      - name: lwm2m_bootstrap
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-example: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: 0 - disabled bootstrap, 1 - enabled
+        x-id: 14
+      - name: lwm2m_short_id
+        required: true
+        schema:
+          maximum: 65534
+          minimum: 1
+          type: integer
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 1
+        x-example: 101
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: short_server_id This identifier uniquely identifies each LwM2M Server
+          configured for the LwM2M Client. This Resource MUST be set when the Bootstrap-Server
+          Resource has a value of 'false'.
+        x-id: 15
+      - name: lwm2m_mfg
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: Laird Connectivity
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device manufacturer
+        x-id: 16
+      - name: lwm2m_mn
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: model
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device model number
+        x-id: 17
+      - name: lwm2m_sn
+        required: false
+        schema:
+          maxLength: 64
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: serial_number
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device serial number
+        x-id: 18
+      - name: lwm2m_fw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device firmware version
+        x-id: 19
+      - name: lwm2m_pwr_src
+        required: false
+        schema:
+          maximum: 7
+          minimum: 0
+          type: integer
+          enum:
+            DC: 0
+            INT_BATT: 1
+            EXT_BATT: 2
+            FUEL_CELL: 3
+            POE: 4
+            USB: 5
+            AC: 6
+            SOLAR: 7
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: true
+        summary: Device power source. This attribute maps to LwM2M path 3/0/6/0.
+        x-id: 20
+      - name: lwm2m_pwr_src_volt
+        required: false
+        schema:
+          maximum: 600000
+          minimum: -600000
+          type: integer
+        x-ctype: int32_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Device power source voltage. This attribute maps to LwM2M path 3/0/7/0.
+        x-id: 21
+      - name: lwm2m_sw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device software version
+        x-id: 22
+      - name: lwm2m_hw_ver
+        required: false
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Device hardware version
+        x-id: 23
+      - name: lwm2m_batt_stat
+        required: false
+        schema:
+          maximum: 6
+          minimum: 0
+          type: integer
+          enum:
+            NORM: 0
+            CHARGING: 1
+            CHARGE_COMP: 2
+            DAMAGED: 3
+            LOW: 4
+            NOT_INST: 5
+            UNKNOWN: 6
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 6
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Device battery status
+        x-id: 24
+      - name: lwm2m_fup_pkg_name
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: my_firmware
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Firmware update firmware package name
+        x-id: 25
+      - name: lwm2m_fup_pkg_ver
+        required: true
+        schema:
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: 0.0.0
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Firmware update package version
+        x-id: 26
+      - name: lwm2m_fup_proxy_srv
+        required: true
+        schema:
+          maxLength: 255
+          minLength: 11
+          type: string
+          pattern: ^coaps?://[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?(\.[a-zA-Z0-9]+(-[a-zA-Z0-9]+)?)+(:\d{1,5})?/?$
+        x-ctype: string
+        x-broadcast: true
+        x-default: coaps://coap-proxy.salticidae.net:5684
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Firmware update proxy server
+        x-id: 27
+      - name: bluetooth_address
+        required: true
+        schema:
+          minLength: 12
+          maxLength: 12
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: '0'
+        x-example: '010203040506'
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        summary: Bluetooth address
+        x-id: 28
+      - name: dm_cnx_delay
+        required: true
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 600
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-validator: cp16
+        summary: Delay (in seconds) before connecting to DM server
+        description: 'Write: Control point - Write 0 to generate new randomized delay
+          with value between (mdm_cnx_delay_minin, dm_cnx_delay_max). Read: time in
+          seconds to delay before connecting.'
+        x-id: 29
+      - name: dm_cnx_delay_min
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 599
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 1
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Min delay (in seconds) before connecting to DM server.
+        x-id: 30
+      - name: dm_cnx_delay_max
+        required: true
+        schema:
+          type: integer
+          minimum: 2
+          maximum: 600
+        x-ctype: uint16_t
+        x-broadcast: true
+        x-default: 300
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Max delay (in seconds) before connecting to DM server.
+        x-id: 31
+      - name: factory_load_path
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 1
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/factory_load.txt
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Path for factory settings that can be restored with attribute load
+        x-id: 32
+      - name: device_id
+        required: true
+        schema:
+          maxLength: 64
+          minLength: 0
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: Unique identifier for the device. When firmware boots, if the value
+          is blank (the default value), the firmware will set a unique value for the
+          device using BLE MAC address, IMEI, or some similar value.
+        x-id: 33
+      - name: smp_auth_req
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: If true, SMP authentication will be required before accessing any
+          SMP services. If false, all SMP services are available regardless of authentication
+          status.
+        x-id: 34
+      - name: gw_smp_auth_req
+        required: true
+        schema:
+          maximum: 1
+          minimum: 0
+          type: integer
+        x-ctype: bool
+        x-broadcast: true
+        x-default: 0
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: If true, the gateway will require peripherals to authenticate before
+          sending SMP messages
+        x-id: 35
+      - name: smp_auth_timeout
+        required: true
+        schema:
+          maximum: 86400
+          minimum: 0
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 300
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: SMP authentication will time out after a lapse in SMP commands lasting
+          this number of seconds.
+        x-id: 36
+      - name: dm_cnx_retries
+        summary: Failed connection retries
+        description: The number of times to retry a failed DM connection before going
+          into backoff mode.
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 255
+        x-ctype: uint8_t
+        x-default: 3
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 37
+      - name: dm_cnx_backoff_multi
+        summary: Connection backoff multiplier
+        description: When in backoff mode, this multiplier will be applied to dm_cnx_delay
+          for each connection retry.
+        required: true
+        schema:
+          type: number
+          minimum: 1.0
+          maximum: 50.0
+        x-ctype: float
+        x-default: 2.0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 38
+      - name: dm_cnx_backoff_retries
+        summary: Connection backoff retries
+        description: The number of times to retry a failed DM connection in backoff
+          mode.
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 255
+        x-ctype: uint8_t
+        x-default: 5
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 39
+      - name: shell_password
+        required: true
+        schema:
+          maxLength: 32
+          minLength: 4
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: zephyr
+        x-prepare: false
+        x-readable: false
+        x-savable: true
+        x-writable: true
+        x-hide-in-show: true
+        x-show-on-change: false
+        summary: Password to login and use the shell
+        x-id: 40
+      - name: shell_session_timeout
+        summary: Time before a login session will expire (in minutes). Set to 0 to
+          disable.
+        required: true
+        schema:
+          minimum: 0
+          maximum: 255
+          type: integer
+        x-ctype: uint8_t
+        x-default: 5
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 41
+      - name: tel_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/tel/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for telemetry authentication.
+        x-id: 42
+      - name: tel_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/tel/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for telemetry authentication.
+        x-id: 43
+      - name: dm_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/dm/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for DM authentication.
+        x-id: 44
+      - name: dm_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/dm/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for DM authentication.
+        x-id: 45
+      - name: fs_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/fs/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for firmware and file service authentication.
+        x-id: 46
+      - name: fs_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/fs/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for firmware and file service authentication.
+        x-id: 47
+      - name: p2p_trust_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/p2p/trust
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the trust store for peer-to-peer authentication.
+        x-id: 48
+      - name: p2p_key_path
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-broadcast: false
+        x-default: /lfs1/enc/p2p/key
+        x-prepare: false
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        summary: The path to the key store for peer-to-peer authentication.
+        x-id: 49
+      - name: ipv4_addr
+        summary: Internet Protocol Version 4 address
+        required: true
+        schema:
+          maxLength: 15
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-example: xxx.xxx.xxx.xxx
+        x-prepare: false
+        x-readable: true
+        x-savable: false
+        x-writable: false
+        x-id: 50
+      - name: network_id_filter
+        summary: If nonzero, then filter advertisements based on network ID
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint16_t
+        x-default: 0
+        x-savable: true
+        x-writable: true
+        x-readable: true
+        x-id: 51
+      - name: memfault_transport
+        summary: Publish Memfault data using selected transport (so that it can be
+          forwarded)
+        required: true
+        schema:
+          maximum: 3
+          minimum: 0
+          type: integer
+          enum:
+            NONE: 0
+            HTTP: 1
+            MQTT: 2
+            COAP: 3
+        x-ctype: uint8_t
+        x-default: 0
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 52
+      - name: mqtt_memfault_topic
+        summary: Topic for publishing Memfault data
+        required: true
+        schema:
+          maxLength: 255
+          type: string
+        x-ctype: string
+        x-default: ''
+        x-savable: true
+        x-writable: true
+        x-readable: true
+        x-id: 53
+      - name: coap_mflt_proxy_route
+        summary: Route used when publishing Memfault data to CoAP proxy
+        required: true
+        schema:
+          maxLength: 32
+          type: string
+        x-ctype: string
+        x-default: mflt
+        x-savable: true
+        x-writable: true
+        x-readable: true
+        x-id: 54
+      - name: store_memfault_data
+        summary: Flag to indicate whether memfault data should be stored to file or
+          posted
+        required: true
+        schema:
+          type: integer
+        x-ctype: bool
+        x-default: 0
+        x-savable: true
+        x-writable: true
+        x-readable: true
+        x-id: 55
+      - name: lte_imei
+        summary: IMEI
+        required: true
+        schema:
+          maxLength: 15
+          type: string
+        x-ctype: string
+        x-default: ''
+        x-readable: true
+        x-id: 56
+      - name: lte_iccid
+        summary: SIM ICCID
+        required: true
+        schema:
+          maxLength: 20
+          type: string
+        x-ctype: string
+        x-default: ''
+        x-readable: true
+        x-id: 57
+      - name: lte_imsi
+        summary: International Mobile Subscriber Identity
+        required: true
+        schema:
+          maxLength: 15
+          type: string
+        x-ctype: string
+        x-default: ''
+        x-readable: true
+        x-id: 58
+      - name: lte_sn
+        summary: LTE serial number
+        required: true
+        schema:
+          maxLength: 14
+          type: string
+        x-ctype: string
+        x-default: ''
+        x-readable: true
+        x-id: 59
+      - name: lte_version
+        summary: Firmware version of the LTE modem
+        required: true
+        schema:
+          maxLength: 29
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-readable: true
+        x-id: 60
+      - name: lte_network_state
+        summary: Network state
+        required: true
+        schema:
+          type: integer
+          enum:
+            NOT_REGISTERED: 0
+            HOME_NETWORK: 1
+            SEARCHING: 2
+            REGISTRATION_DENIED: 3
+            OUT_OF_COVERAGE: 4
+            ROAMING: 5
+            EMERGENCY: 8
+            UNABLE_TO_CONFIGURE: 240
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 61
+      - name: lte_startup_state
+        summary: Modem startup state
+        required: true
+        schema:
+          type: integer
+          enum:
+            READY: 0
+            WAITING_FOR_ACCESS_CODE: 1
+            SIM_NOT_PRESENT: 2
+            SIM_LOCK: 3
+            UNRECOVERABLE_ERROR: 4
+            UNKNOWN: 5
+            INACTIVE_SIM: 6
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 62
+      - name: lte_init_error
+        summary: Initialization status of LTE driver
+        required: true
+        schema:
+          type: integer
+          enum:
+            NONE: 0
+            NO_IFACE: -1
+            IFACE_CFG: -2
+            DNS_CFG: -3
+            MODEM: -4
+            AIRPLANE: -5
+        x-ctype: int8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 63
+      - name: lte_apn
+        summary: The LTE network access point name
+        required: true
+        schema:
+          maxLength: 64
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-readable: true
+        x-writable: true
+        x-id: 64
+      - name: lte_rsrp
+        summary: Reference Signals Receive Power (RSRP) in dBm
+        required: true
+        schema:
+          type: integer
+        x-ctype: int16_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 65
+      - name: lte_sinr
+        summary: Signal to Interference plus Noise Ratio (SINR) in dB
+        required: true
+        schema:
+          type: integer
+        x-ctype: int16_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 66
+      - name: lte_bands
+        summary: Radio bands enabled in the LTE modem
+        required: true
+        schema:
+          minLength: 1
+          maxLength: 20
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-readable: true
+        x-writable: true
+        x-id: 67
+      - name: lte_active_bands
+        summary: Radio bands in use by the LTE modem
+        required: true
+        schema:
+          maxLength: 20
+          type: string
+        x-ctype: string
+        x-broadcast: true
+        x-default: ''
+        x-readable: true
+        x-id: 68
+      - name: lte_operator_index
+        summary: Operator index
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 255
+        x-readable: true
+        x-id: 69
+      - name: lte_sleep_state
+        summary: Sleep state of the driver
+        required: true
+        schema:
+          type: integer
+          enum:
+            UNINITIALIZED: 0
+            HIBERNATE: 1
+            AWAKE: 2
+            LITE_HIBERNATE: 3
+            SLEEP: 4
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 70
+      - name: lte_rat
+        summary: Radio Access Technology
+        required: true
+        schema:
+          type: integer
+          enum:
+            CAT_M1: 0
+            CAT_NB1: 1
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-writable: true
+        x-id: 71
+      - name: lte_log_lvl
+        summary: HL7800 driver log level
+        required: true
+        schema:
+          type: integer
+          enum:
+            NONE: 0
+            ERROR: 1
+            WARNING: 2
+            INFO: 3
+            DEBUG: 4
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 2
+        x-readable: true
+        x-savable: true
+        x-writable: true
+        x-id: 72
+      - name: lte_fup_status
+        summary: HL7800 firmware update status
+        required: true
+        schema:
+          type: integer
+          enum:
+            IDLE: 0
+            START: 1
+            WIP: 2
+            PAD: 3
+            SEND_EOT: 4
+            FILE_ERR: 5
+            INSTALL: 6
+            REBOOT_RECONFIG: 7
+            COMPLETE: 8
+        x-ctype: uint8_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 73
+      - name: lte_udp_tx
+        summary: Number of UDP TX payload bytes
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 74
+      - name: lte_udp_rx
+        summary: Number of UDP RX payload bytes
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 75
+      - name: lte_tcp_tx
+        summary: Number of TCP TX payload bytes
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 76
+      - name: lte_tcp_rx
+        summary: Number of TCP RX payload bytes
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 77
+      - name: lte_data_total
+        summary: Total number of socket (UDP and TCP) payload bytes
+        required: true
+        schema:
+          type: integer
+        x-ctype: uint32_t
+        x-broadcast: true
+        x-default: 0
+        x-readable: true
+        x-id: 78

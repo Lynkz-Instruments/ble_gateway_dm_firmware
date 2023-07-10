@@ -1,0 +1,324 @@
+{
+	"version": "2.0.0",
+	"windows": {
+		"options": {
+			"shell": {
+				"executable": "cmd.exe",
+				"args": [
+					"/d",
+					"/c"
+				]
+			}
+		}
+	},
+	"tasks": [
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "west build -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": "absolute"
+			}
+		},
+		{
+			// Use this task to build an initial firmware image with custom private/public keys
+			"label": "build with custom keys",
+			"type": "shell",
+			"command": "west build -p -b ${input:board} -d ${workspaceFolder}/build/${input:board} -- -DAPP_TYPE=${input:telemetry} -DCONFIG_SB_SIGNING_KEY_FILE=\\\"${workspaceFolder}/${input:sb_signing_key}\\\" -Dmcuboot_CONFIG_FW_INFO_FIRMWARE_VERSION=${input:mcuboot_version} -DCONFIG_SB_PUBLIC_KEY_FILES=\\\"${workspaceFolder}/${input:public_keys}\\\" '-Dmcuboot_CONFIG_BOOT_SIGNATURE_KEY_FILE=\\\"${workspaceFolder}/${input:mcuboot_signing_key}\\\"'",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": "absolute"
+			}
+		},
+		{
+			// Use this task as a second step after 'build with custom keys', to build firmware with new keys to test key revocation
+			"label": "build with NEW key",
+			"type": "shell",
+			"command": "west build -p -b ${input:board} -d ${workspaceFolder}/build/${input:board} -- -DAPP_TYPE=${input:telemetry} -DCONFIG_SB_SIGNING_KEY_FILE=\\\"${workspaceFolder}/${input:sb_signing_key}\\\" -Dmcuboot_CONFIG_FW_INFO_FIRMWARE_VERSION=${input:mcuboot_version} '-Dmcuboot_CONFIG_BOOT_SIGNATURE_KEY_FILE=\\\"${workspaceFolder}/${input:mcuboot_signing_key}\\\"'",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": "absolute"
+			}
+		},
+		{
+			"label": "re-build",
+			"type": "shell",
+			"command": "west build -p -b ${input:board} -d ${workspaceFolder}/build/${input:board} -- -DAPP_TYPE=${input:telemetry}",
+			"problemMatcher": {
+				"base": "$gcc",
+				"fileLocation": "absolute"
+			}
+		},
+		{
+			"label": "flash app",
+			"type": "shell",
+			"command": "west flash -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "flash mcuboot image",
+			"type": "shell",
+			"command": "west flash -d ${workspaceFolder}/build/${input:board} --hex-file ${workspaceFolder}/build/${input:board}/zephyr/${input:mcuboot_image}",
+			"problemMatcher": []
+		},
+		{
+			"label": "clean",
+			"type": "shell",
+			"command": "west build -t pristine -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "delete build dir",
+			"type": "shell",
+			"command": "rm -rf ${workspaceFolder}/build/${input:board}",
+			"windows": {
+				"command": "del ${workspaceFolder}/build/${input:board}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "run all tests",
+			"type": "shell",
+			"command": "${workspaceFolder}/../zephyr/scripts/twister -v -v -v -T ${workspaceFolder}",
+			"problemMatcher": []
+		},
+		{
+			"label": "Run QEMU",
+			"type": "shell",
+			"command": "west build -t run -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "PM report",
+			"type": "shell",
+			"command": "west build -t partition_manager_report -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "menuconfig",
+			"type": "shell",
+			"command": "west build -t menuconfig -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "menuconfig mcuboot",
+			"type": "shell",
+			"command": "west build -t menuconfig -b ${input:board} -d ${workspaceFolder}/build/${input:board}/bootloader",
+			"problemMatcher": []
+		},
+		{
+			"label": "menuconfig bl5340 hci_rpmsg",
+			"type": "shell",
+			"command": "west build -t menuconfig -b bl5340_dvk_cpunet -d ${workspaceFolder}/build/bl5340_dvk_cpuapp/hci_rpmsg",
+			"problemMatcher": []
+		},
+		{
+			"label": "menuconfig b0",
+			"type": "shell",
+			"command": "west build -t menuconfig -b ${input:board} -d ${workspaceFolder}/build/${input:board}/b0",
+			"problemMatcher": []
+		},
+		{
+			"label": "ram_report",
+			"type": "shell",
+			"command": "west build -b ${input:board} -d ${workspaceFolder}/build/${input:board} --target ram_report > ${workspaceFolder}/build/${input:board}/ram_report.txt",
+			"problemMatcher": []
+		},
+		{
+			"label": "rom_report",
+			"type": "shell",
+			"command": "west build -b ${input:board} -d ${workspaceFolder}/build/${input:board} --target rom_report > ${workspaceFolder}/build/${input:board}/rom_report.txt",
+			"problemMatcher": []
+		},
+		{
+			"label": "puncover",
+			"type": "shell",
+			"command": "west build -t puncover -b ${input:board} -d ${workspaceFolder}/build/${input:board}",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image upload app",
+			"type": "shell",
+			"command": "mcumgr -t 20 -r 2 ${input:mcumgr_cnx} image upload ${workspaceFolder}/build/${input:board}/zephyr/app_update.bin",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image upload mcuboot",
+			"type": "shell",
+			"command": "mcumgr -t 20 -r 2 ${input:mcumgr_cnx} image upload ${workspaceFolder}/build/${input:board}/zephyr/signed_by_mcuboot_and_b0_s1_image_update.bin",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image list",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} image list",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image test",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} image test ${input:image-hash}",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image confirm",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} image confirm",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image confirm with hash",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} image confirm ${input:image-hash}",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr image erase",
+			"type": "shell",
+			"command": "mcumgr -t 30 ${input:mcumgr_cnx} image erase",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr reset",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} reset",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr echo",
+			"type": "shell",
+			"command": "mcumgr ${input:mcumgr_cnx} echo 'hello'",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr file upload",
+			"type": "shell",
+			"command": "mcumgr -t 5 -r 2 ${input:mcumgr_cnx} fs upload ${input:src_file_path} ${input:dst_file_name}",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr file download",
+			"type": "shell",
+			"command": "mcumgr -t 5 -r 2 ${input:mcumgr_cnx} fs download ${input:src_file_path} ${input:dst_file_name}",
+			"problemMatcher": []
+		},
+		{
+			"label": "get build id (memfault)",
+			"type": "shell",
+			"command": "arm-none-eabi-readelf -n ${workspaceFolder}/build/${input:board}/zephyr/zephyr.elf",
+			"problemMatcher": []
+		},
+		{
+			"label": "mcumgr shell cmd",
+			"type": "shell",
+			"command": "mcumgr -t 30 ${input:mcumgr_cnx} shell exec ${input:shell_cmd}",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build all APIs",
+			"type": "shell",
+			"command": "python3 ${workspaceFolder}/../modules/lib/laird_connect/attributes/generator/api.py ${workspaceFolder} p100+none p100+lwm2m p100+mqtt mg100+none mg100+lwm2m mg100+mqtt bl5340+none bl5340+lwm2m bl5340+mqtt",
+			"windows": {
+				"command": "py -3 ${workspaceFolder}/../modules/lib/laird_connect/attributes/generator/api.py ${workspaceFolder} p100+none p100+lwm2m p100+mqtt mg100+none mg100+lwm2m mg100+mqtt bl5340+none bl5340+lwm2m bl5340+mqtt",
+			},
+			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "board",
+			"description": "Select a board",
+			"default": "pinnacle_100_dvk",
+			"type": "pickString",
+			"options": [
+				"pinnacle_100_dvk",
+				"mg100",
+				"bl5340_dvk_cpuapp",
+				"nrf7002dk_nrf5340_cpuapp"
+			]
+		},
+		{
+			"id": "telemetry",
+			"description": "Select telemetry type",
+			"default": "lwm2m",
+			"type": "pickString",
+			"options": [
+				"none",
+				"lwm2m",
+				"mqtt"
+			]
+		},
+		{
+			"id": "mcumgr_cnx",
+			"description": "mcumgr connection params",
+			"type": "pickString",
+			"options": [
+				// Use a saved connection profile you have setup
+				"-c uart_3848",
+				// Change 'peer_name=' to match your device name
+				"--conntype ble --connstring ctlr_name=hci0,peer_name='MG100-0303848'",
+				// Change 'dev=' to match your serial device
+				"--conntype serial --connstring dev=/dev/tty.usbserial-FT4G5B9B",
+				"--conntype serial --connstring dev=/dev/cu.usbserial-FT61HZ7Y"
+			]
+		},
+		{
+			"id": "image-hash",
+			"description": "hash of firmware image",
+			"type": "promptString",
+			"default": "enter hash here"
+		},
+		{
+			"id": "src_file_path",
+			"description": "full path of the source file",
+			"type": "promptString",
+			"default": "enter src file path"
+		},
+		{
+			"id": "dst_file_name",
+			"description": "full path of the destination file",
+			"type": "promptString",
+			"default": "enter dst file path"
+		},
+		{
+			"id": "sb_signing_key",
+			"description": "private key path for secure boot signing",
+			"type": "promptString",
+			"default": "config/keys/debug_priv_a.pem"
+		},
+		{
+			"id": "public_keys",
+			"description": "list of public keys for secure boot",
+			"type": "promptString",
+			"default": "config/keys/debug_pub_b.pem,config/keys/debug_pub_c.pem"
+		},
+		{
+			"id": "mcuboot_version",
+			"description": "monotonic counter to indicate version of mcuboot",
+			"type": "promptString",
+			"default": "1"
+		},
+		{
+			"id": "mcuboot_signing_key",
+			"description": "private key path for mcuboot signing",
+			"type": "promptString",
+			"default": "config/keys/debug_priv_a.pem"
+		},
+		{
+			"id": "mcuboot_image",
+			"description": "mcuboot image to flash",
+			"type": "pickString",
+			"options": [
+				"signed_by_mcuboot_and_b0_s0_image_signed.hex",
+				"signed_by_mcuboot_and_b0_s1_image_signed.hex"
+			]
+		},
+		{
+			"id": "shell_cmd",
+			"description": "Enter a shell cmd",
+			"type": "promptString",
+			"default": "cmd"
+		}
+	]
+}

@@ -1,0 +1,3 @@
+#include "../../../modules/lib/laird_connect/ble_gateway_device_manager/include/memfault/memfault_metrics.def"
+#include "../../../modules/lib/laird_connect/modem_hl7800/include/memfault/memfault_metrics.def"
+#include "../../../modules/lib/laird_connect/shell_login/include/memfault/memfault_metrics.def"

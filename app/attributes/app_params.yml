@@ -1,0 +1,102 @@
+---
+info:
+  title: ble_gateway_dm_firmware_attributes
+attributes:
+  - name: reserved0
+    required: true
+    schema:
+      type: integer
+    x-ctype: uint32_t
+    x-default: 0
+    summary: Required by attribute system
+  - name: api_version
+    required: true
+    schema:
+      maxLength: 11
+      minLength: 6
+      type: string
+    x-ctype: string
+    x-default: 0.0.0
+    x-example: 0.1.0
+    x-readable: true
+    summary: The API version that the firmware supports
+  - name: firmware_version
+    required: true
+    schema:
+      maxLength: 64
+      minLength: 5
+      type: string
+    x-ctype: string
+    x-default: 0.0.0+0
+    x-readable: true
+    summary: "Firmware Version. Format = Major.Minor.Fix+build"
+  - name: dump_path
+    required: true
+    schema:
+      maxLength: 32
+      minLength: 1
+      type: string
+    x-ctype: string
+    x-default: /lfs1/attr_dump.txt
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: "Path for attribute dump"
+  - name: load_path
+    required: true
+    schema:
+      maxLength: 32
+      minLength: 1
+      type: string
+    x-ctype: string
+    x-default: /lfs1/enc/attr_load.txt
+    x-readable: true
+    x-savable: true
+    x-writable: true
+    summary: "Path for attribute load"
+  - name: board
+    required: true
+    schema:
+      maxLength: 64
+      minLength: 1
+      type: string
+    x-ctype: string
+    x-default: my_board
+    x-example: pinnacle_100_dvk
+    x-readable: true
+    summary: "Zephyr board the firmware is built for."
+  - name: log_on_boot
+    description: "When set to false, logging output will be disabled when the firmware starts."
+    required: true
+    schema:
+      maximum: 1
+      minimum: 0
+      type: integer
+    x-ctype: bool
+    x-broadcast: true
+    x-default: 0
+    x-readable: true
+    x-savable: true
+    x-writable: true
+  - name: disable_flow_control
+    description: "When true flow control is disabled on the console UART. Requires a reboot to take effect"
+    required: true
+    schema:
+      maximum: 1
+      minimum: 0
+      type: integer
+    x-ctype: bool
+    x-default: 0
+    x-readable: true
+    x-savable: true
+    x-writable: true
+  - name: baud_rate
+    description: "Baud rate for console uart. Changes require a reboot to take effect."
+    required: true
+    schema:
+      type: integer
+    x-ctype: uint32_t
+    x-default: 115200
+    x-readable: true
+    x-savable: true
+    x-writable: true

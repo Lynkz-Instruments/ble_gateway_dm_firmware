@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            // Be sure to set cortex-debug.armToolchainPath in user settings.
+            // For example "cortex-debug.armToolchainPath": "/Users/ryan/zephyr-sdk-0.14.2/arm-zephyr-eabi/bin"
+            // If using the Zephyr SDK setting "cortex-debug.armToolchainPrefix": "arm-zephyr-eabi" is required.
+            "name": "Cortex Debug",
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceFolder}/build/${input:board}/zephyr/zephyr.elf",
+            // Because the builds use a bootloader, attaching to the already flashed running firmware is the best strategy.
+            // After attaching, the CPU will be halted. Reset the device via the debug toolbar to continue debugging to avoid a hardfault.
+            // NOTE: When debugging, a user will only be able to halt the CPU once. Upon resuming operation, a hardfault will occur due to the the BLE controller.
+            "request": "attach",
+            "type": "cortex-debug",
+            "servertype": "jlink",
+            "device": "${input:device}",
+            "breakAfterReset": false,
+            "rtos": "Zephyr"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "board",
+            "description": "Select a board",
+            "default": "pinnacle_100_dvk",
+            "type": "pickString",
+            "options": [
+                "pinnacle_100_dvk",
+                "mg100",
+                "bl5340_dvk_cpuapp"
+            ]
+        },
+        {
+            "id": "device",
+            "description": "Select MCU",
+            "default": "nRF52840_xxAA",
+            "type": "pickString",
+            "options": [
+                "nRF52840_xxAA",
+                "nRF5340_xxAA_APP"
+            ]
+        }
+    ]
+}
