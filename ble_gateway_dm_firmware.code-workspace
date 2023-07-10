@@ -21,12 +21,54 @@
 	],
 	"settings": {
 		"files.associations": {
-			"*.in": "c"
+			"*.in": "c",
+			"log.h": "c",
+			"settings.h": "c",
+			"uuid.h": "c",
+			"nus.h": "c",
+			"bluetooth.h": "c",
+			"kernel.h": "c",
+			"lcz_pki_auth.h": "c",
+			"attr.h": "c",
+			"errno_str.h": "c",
+			"lcz_mqtt_shadow_parser.h": "c",
+			"lcz_software_reset.h": "c",
+			"lcz_snprintk.h": "c",
+			"lcz_hw_key.h": "c",
+			"gatt.h": "c",
+			"init.h": "c",
+			"addr.h": "c",
+			"gap.h": "c",
+			"xlocale": "c",
+			"functional": "c",
+			"optional": "c",
+			"system_error": "c",
+			"type_traits": "c",
+			"xlocnum": "c",
+			"xtr1common": "c",
+			"ratio": "c",
+			"array": "c",
+			"tuple": "c",
+			"utility": "c",
+			"lcz_sensor_event.h": "c",
+			"vector": "c",
+			"xstring": "c",
+			"xutility": "c",
+			"string": "c",
+			"string_view": "c",
+			"deque": "c",
+			"initializer_list": "c",
+			"list": "c",
+			"queue": "c",
+			"random": "c",
+			"xhash": "c",
+			"lcz_sensor_adv_match.h": "c"
 		},
 		"C_Cpp.errorSquiggles": "Disabled",
 		"C_Cpp.dimInactiveRegions": false,
 		"nrf-connect.applications": [
 			"${workspaceFolder}"
-		]
+		],
+		"nrf-connect.toolchain.path": "${nrf-connect.toolchain:1.9.1}"
 	}
 }
